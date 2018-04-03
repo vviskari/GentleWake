@@ -66,7 +66,7 @@ static void initialise_ui(void) {
   settings_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(settings_layer, s_window);
   IF_COLOR(menu_layer_set_normal_colors(settings_layer, GColorBlack, GColorWhite)); 
-  IF_COLOR(menu_layer_set_highlight_colors(settings_layer, GColorBlueMoon, GColorWhite));
+  IF_COLOR(menu_layer_set_highlight_colors(settings_layer, GColorPictonBlue, GColorBlack));
   layer_add_child(root_layer, (Layer *)settings_layer);
 }
 
@@ -415,38 +415,39 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
         case 0:
           // Set One-Time alarm
           gen_alarm_str(&(s_settings->one_time_alarm), alarmtimestr, sizeof(alarmtimestr));
+          snprintf(alarmstr, sizeof(alarmstr), "Once - %s", alarmtimestr);
           if (s_settings->one_time_alarm.enabled)
-            snprintf(alarmstr, sizeof(alarmstr), "%s - Hold to turn off", alarmtimestr);
+            menu_cell_basic_draw(ctx, cell_layer, alarmstr, "Hold to turn off", NULL);
           else
-            snprintf(alarmstr, sizeof(alarmstr), "%s - Hold to turn on", alarmtimestr);
-      
-          menu_cell_basic_draw(ctx, cell_layer, "One-Time Alarm", alarmstr, NULL);
+            menu_cell_basic_draw(ctx, cell_layer, alarmstr, "Hold to turn on", NULL);          
           break;
     
         case 1:
           // Set alarm time for all days
           if (is_alarms_mixed()) {
-            strncpy(alarmstr, "Mixed - Hold to turn off", sizeof(alarmstr));
+            strncpy(alarmstr, "All - Mixed", sizeof(alarmstr));
+            menu_cell_basic_draw(ctx, cell_layer, alarmstr, "Hold to turn off", NULL);
           } else {
             gen_alarm_str(&s_alarms[0], alarmtimestr, sizeof(alarmtimestr));
+            snprintf(alarmstr, sizeof(alarmstr), "All - %s", alarmtimestr);
             if (s_alarms[0].enabled)
-              snprintf(alarmstr, sizeof(alarmstr), "%s - Hold to turn off", alarmtimestr);
+              menu_cell_basic_draw(ctx, cell_layer, alarmstr, "Hold to turn off", NULL);
             else
-              snprintf(alarmstr, sizeof(alarmstr), "%s - Hold to turn on", alarmtimestr);
+              menu_cell_basic_draw(ctx, cell_layer, alarmstr, "Hold to turn on", NULL);
           }
-      
-          menu_cell_basic_draw(ctx, cell_layer, "All Days", alarmstr, NULL);
+          
           break;
     
         default:
           // Set single day alarm
-          dayname(cell_index->row-2, daystr, sizeof(daystr));
+          daynameshort(cell_index->row-2, daystr, sizeof(daystr));
           gen_alarm_str(&s_alarms[cell_index->row-2], alarmtimestr, sizeof(alarmtimestr));
+          snprintf(alarmstr, sizeof(alarmstr), "%s - %s", daystr, alarmtimestr);
+
           if (s_alarms[cell_index->row-2].enabled)
-            snprintf(alarmstr, sizeof(alarmstr), "%s - Hold to turn off", alarmtimestr);
+            menu_cell_basic_draw(ctx, cell_layer, alarmstr, "Hold to turn off", NULL);
           else
-            snprintf(alarmstr, sizeof(alarmstr), "%s - Hold to turn on", alarmtimestr);
-          menu_cell_basic_draw(ctx, cell_layer, daystr, alarmstr, NULL);
+            menu_cell_basic_draw(ctx, cell_layer, alarmstr, "Hold to turn on", NULL);
           break;
       }
       break;
